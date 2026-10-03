@@ -17,6 +17,7 @@ $(PY):
 
 setup: $(PY)  ## Create venv, install package + dev tools, install pre-commit hooks
 	$(PY) -m pip install -e ".[dev]"
+	mkdir -p data/raw
 	@if [ -d .git ]; then $(BIN)/pre-commit install; else echo "Not a git repo yet: run 'git init' then '$(BIN)/pre-commit install'"; fi
 
 lock:  ## Freeze the exact environment to requirements.lock
