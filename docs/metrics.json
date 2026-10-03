@@ -1,0 +1,218 @@
+{
+  "dataset": "IEEE-CIS",
+  "valid": {
+    "LightGBM": {
+      "n": 88581,
+      "n_fraud": 3042,
+      "pr_auc": 0.667841797366146,
+      "roc_auc": 0.9305969173978098,
+      "recall_at_90_precision": 0.41157133464825774,
+      "threshold_at_90_precision": 0.5993991572645305,
+      "brier": 0.01746161709338846,
+      "log_loss": 0.07250666327906204,
+      "mean_predicted": 0.03434145009313509,
+      "observed_rate": 0.03434145019812375
+    },
+    "Logistic regression": {
+      "n": 88581,
+      "n_fraud": 3042,
+      "pr_auc": 0.4121023978585441,
+      "roc_auc": 0.8491042403279467,
+      "recall_at_90_precision": 0.13050624589086127,
+      "threshold_at_90_precision": 0.999944811352223,
+      "brier": 0.11535032408495792,
+      "log_loss": 0.3930263199048262,
+      "mean_predicted": 0.27356655291760656,
+      "observed_rate": 0.03434145019812375
+    }
+  },
+  "test": {
+    "LightGBM": {
+      "n": 88581,
+      "n_fraud": 3083,
+      "pr_auc": 0.5723023859020921,
+      "roc_auc": 0.9066136658865496,
+      "recall_at_90_precision": 0.23224132338631204,
+      "threshold_at_90_precision": 0.9884668602958993,
+      "brier": 0.021170253271989337,
+      "log_loss": 0.08845340397396748,
+      "mean_predicted": 0.038150142409778806,
+      "observed_rate": 0.03480430340592226,
+      "uncalibrated_brier": 0.022573021002051552
+    },
+    "Logistic regression": {
+      "n": 88581,
+      "n_fraud": 3083,
+      "pr_auc": 0.17660893129921365,
+      "roc_auc": 0.8251564907535646,
+      "recall_at_90_precision": 0.0,
+      "threshold_at_90_precision": null,
+      "brier": 0.14021919463469112,
+      "log_loss": 0.651259184210486,
+      "mean_predicted": 0.2978612347341054,
+      "observed_rate": 0.03480430340592226
+    }
+  },
+  "costs": {
+    "currency": "GBP",
+    "config": {
+      "currency": "GBP",
+      "missed_fraud_multiplier": 1.0,
+      "false_alarm_cost": 5.0,
+      "review_cost": 2.0,
+      "review_catch_rate": 1.0
+    },
+    "budgets": {
+      "max_review_rate": 0.05,
+      "max_block_rate": 0.01
+    },
+    "do_nothing": {
+      "test": {
+        "thresholds": {
+          "review": 1.000001,
+          "block": 1.000001
+        },
+        "total_cost": 469608.52099999995,
+        "n": 88581,
+        "n_approve": 88581,
+        "n_review": 0,
+        "n_block": 0,
+        "n_fraud": 3083,
+        "fraud_stopped": 0,
+        "fraud_blocked": 0,
+        "fraud_amount_total": 469608.52099999995,
+        "fraud_amount_stopped": 0.0,
+        "genuine_blocked": 0,
+        "genuine_reviewed": 0,
+        "fraud_recall": 0.0
+      }
+    },
+    "LightGBM": {
+      "thresholds": {
+        "review": 0.10517529215358931,
+        "block": 0.9212598425196851
+      },
+      "valid_cost": 151403.44899999985,
+      "test": {
+        "thresholds": {
+          "review": 0.10517529215358931,
+          "block": 0.9212598425196851
+        },
+        "total_cost": 181781.516,
+        "n": 88581,
+        "n_approve": 82579,
+        "n_review": 5341,
+        "n_block": 661,
+        "n_fraud": 3083,
+        "fraud_stopped": 2079,
+        "fraud_blocked": 603,
+        "fraud_amount_total": 469608.52099999995,
+        "fraud_amount_stopped": 298799.005,
+        "genuine_blocked": 58,
+        "genuine_reviewed": 3865,
+        "fraud_recall": 0.6743431722348362
+      },
+      "test_confusion_blocked": {
+        "tp": 603,
+        "fp": 58,
+        "fn": 2480,
+        "tn": 85440
+      },
+      "test_confusion_flagged": {
+        "tp": 2079,
+        "fp": 3923,
+        "fn": 1004,
+        "tn": 81575
+      }
+    },
+    "Logistic regression": {
+      "thresholds": {
+        "review": 0.7515381353778159,
+        "block": 0.9991295167657809
+      },
+      "valid_cost": 271848.2140000002,
+      "test": {
+        "thresholds": {
+          "review": 0.7515381353778159,
+          "block": 0.9991295167657809
+        },
+        "total_cost": 291038.14800000004,
+        "n": 88581,
+        "n_approve": 81713,
+        "n_review": 5073,
+        "n_block": 1795,
+        "n_fraud": 3083,
+        "fraud_stopped": 1498,
+        "fraud_blocked": 439,
+        "fraud_amount_total": 469608.52099999995,
+        "fraud_amount_stopped": 195496.373,
+        "genuine_blocked": 1356,
+        "genuine_reviewed": 4014,
+        "fraud_recall": 0.48589036652611095
+      },
+      "test_confusion_blocked": {
+        "tp": 439,
+        "fp": 1356,
+        "fn": 2644,
+        "tn": 84142
+      },
+      "test_confusion_flagged": {
+        "tp": 1498,
+        "fp": 5370,
+        "fn": 1585,
+        "tn": 80128
+      }
+    },
+    "savings_vs_do_nothing": {
+      "LightGBM": 287827.00499999995,
+      "Logistic regression": 178570.3729999999
+    },
+    "savings_vs_logreg": 109256.63200000004
+  },
+  "figures": [
+    "pr_curve.png",
+    "roc_curve.png",
+    "calibration.png",
+    "feature_importance.png",
+    "score_distribution.png"
+  ],
+  "training": {
+    "trained_at": "2026-10-02T21:16:32+00:00",
+    "git_hash": "nogit",
+    "seconds_total": 1682.8,
+    "seconds_lgbm_tuning": 1616.0,
+    "seconds_baseline": 31.0,
+    "optuna_trials": 8,
+    "best_iteration": 2447,
+    "valid_pr_auc_best_trial": 0.667841797366146,
+    "machine": "Darwin arm64, Python 3.11.5",
+    "n_features": 447,
+    "data_window": {
+      "train": {
+        "rows": 413378,
+        "fraud_rate": 0.03516878014795175,
+        "TransactionDT": [
+          86400,
+          10437996
+        ]
+      },
+      "valid": {
+        "rows": 88581,
+        "fraud_rate": 0.03434145019812375,
+        "TransactionDT": [
+          10438003,
+          13151840
+        ]
+      },
+      "test": {
+        "rows": 88581,
+        "fraud_rate": 0.03480430340592226,
+        "TransactionDT": [
+          13151880,
+          15811131
+        ]
+      }
+    }
+  },
+  "model_version": "20261002-211632-nogit"
+}

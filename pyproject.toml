@@ -1,0 +1,106 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fraudlens"
+version = "0.1.0"
+description = "Cost-aware, explainable credit card fraud detection on IEEE-CIS, with a FastAPI service and Streamlit demo."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11,<3.12"
+authors = [{ name = "Kian Haria" }]
+# Pinned for reproducibility. Bump deliberately, re-run training, and re-record metrics.
+dependencies = [
+    "numpy==1.26.4",
+    "scipy==1.14.1",          # pinned: newer scipy deprecates APIs scikit-learn 1.5 uses
+    "pandas==2.2.3",
+    "pyarrow==17.0.0",
+    "scikit-learn==1.5.2",
+    "lightgbm==4.5.0",
+    "optuna==4.0.0",
+    "shap==0.46.0",
+    "matplotlib==3.9.2",
+    "pyparsing==3.2.0",       # pinned: 3.3 floods matplotlib 3.9 with deprecation warnings
+    "plotly==5.24.1",
+    "pydantic==2.9.2",
+    "pyyaml==6.0.2",
+    "joblib==1.4.2",
+    "fastapi==0.115.2",
+    "uvicorn[standard]==0.32.0",
+    "streamlit==1.39.0",
+    "httpx==0.27.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.3",
+    "pytest-cov==5.0.0",
+    "ruff==0.7.0",
+    "black==24.10.0",
+    "mypy==1.13.0",
+    "pre-commit==4.0.1",
+    "types-PyYAML==6.0.12.20240917",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# ---------------------------------------------------------------- lint / format
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "scripts"]
+extend-exclude = ["notebooks"]
+
+[tool.ruff.lint]
+# T20 bans print(): all output goes through logging.
+select = ["E", "W", "F", "I", "B", "UP", "N", "SIM", "RUF", "T20"]
+ignore = ["E501"]  # line length is black's job
+
+[tool.ruff.lint.isort]
+known-first-party = ["fraudlens", "scripts"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["N802", "N806"]  # test names may mirror dataset column names (e.g. TransactionDT)
+
+[tool.ruff.lint.pep8-naming]
+# IEEE-CIS column names are CamelCase; allow them as variable names in feature code.
+ignore-names = ["X", "X_*", "df_*"]
+
+# ---------------------------------------------------------------- type checking
+[tool.mypy]
+python_version = "3.11"
+files = ["src", "scripts"]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+no_implicit_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = ["pandas.*", "lightgbm.*", "shap.*", "optuna.*", "sklearn.*", "plotly.*", "joblib.*", "streamlit.*", "pyarrow.*"]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------- tests
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]  # lets tests import scripts/* entry points
+addopts = "-ra --strict-markers"
+filterwarnings = [
+    # Third-party deprecations we cannot fix; our own code's warnings still show.
+    "ignore::DeprecationWarning:starlette.*",
+    "ignore::DeprecationWarning:shap.*",
+]
+markers = [
+    "real_data: requires the real IEEE-CIS files in data/raw (skipped in CI)",
+]
+
+[tool.coverage.run]
+source = ["fraudlens"]
+omit = ["src/fraudlens/app/*"]  # Streamlit UI is exercised manually; its logic lives in tested modules

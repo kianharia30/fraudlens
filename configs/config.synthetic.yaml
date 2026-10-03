@@ -1,0 +1,92 @@
+# SYNTHETIC smoke-test config: same settings as config.yaml, but every path points at
+# data/synthetic or artifacts/synthetic so fake data can never mix with the real run.
+# Metrics produced with this config are meaningless (they are tagged "synthetic").
+# Relative paths are resolved against the project root (the parent of configs/).
+
+project:
+  name: fraudlens
+  seed: 42
+  dataset: synthetic
+
+paths:
+  raw_dir: data/synthetic/raw
+  processed_dir: data/synthetic/processed
+  artifacts_dir: artifacts/synthetic/models      # versioned model bundles (git-ignored)
+  figures_dir: artifacts/synthetic/figures
+  reports_dir: artifacts/synthetic
+  metrics_file: artifacts/synthetic/metrics.json      # committed: the README's numbers come from here
+  benchmark_file: artifacts/synthetic/benchmark.json
+
+data:
+  transaction_file: train_transaction.csv
+  identity_file: train_identity.csv
+  id_col: TransactionID
+  time_col: TransactionDT      # seconds from an undisclosed reference time
+  target_col: isFraud
+  amount_col: TransactionAmt
+
+# Chronological split on TransactionDT (never random).
+# TransactionDT is a relative offset rather than a calendar date, so splits are defined
+# as fractions of time-sorted rows. The exact TransactionDT cut-offs are written to
+# split_meta.json by the data pipeline, so a split is fully reproducible.
+# test = 1 - train_frac - valid_frac (held-out demo/test pool: never used for
+# training, tuning, calibration or threshold selection).
+split:
+  train_frac: 0.70
+  valid_frac: 0.15
+
+features:
+  # Proxy for a customer/card identity: the dataset has no customer ID (see README).
+  card_uid_cols: [card1, card2, card3, card5, addr1]
+  # Coarser card key (no address), used only to detect a *new billing address* for a card.
+  card_key_cols: [card1, card2, card3, card5]
+  # "Is this value new for this card?" flags are built for these columns.
+  novelty_cols: [P_emaildomain, R_emaildomain, DeviceInfo]
+  velocity_windows_seconds:
+    "1h": 3600
+    "24h": 86400
+  # Columns with more missing values than this (measured on train only) are dropped.
+  max_missing_frac: 0.95
+  # Frequency encodings (fitted on train only) are added for these columns.
+  freq_encode_cols:
+    [card1, card2, card3, card5, addr1, card_uid, P_emaildomain, R_emaildomain,
+     DeviceInfo, id_30, id_31, id_33]
+  # String columns with more distinct train values than this keep only their frequency encoding.
+  max_ordinal_cardinality: 100
+
+model:
+  optuna_trials: 4
+  optuna_timeout_seconds: 120
+  learning_rate: 0.05
+  max_boost_rounds: 3000
+  early_stopping_rounds: 100
+  num_threads: 0                 # 0 = all cores
+  calibration_method: isotonic   # isotonic | sigmoid (Platt)
+  recall_at_precision: 0.90
+  baseline_max_rows: 200000      # logistic regression trains on the most recent N train rows (RAM)
+  baseline_max_iter: 300
+
+# Expected cost of each outcome, in GBP. (The dataset does not state its currency;
+# amounts are treated as GBP for illustration.)
+costs:
+  currency: GBP
+  missed_fraud_multiplier: 1.0   # a missed fraud costs this multiple of TransactionAmt
+  false_alarm_cost: 5.0          # blocking a genuine transaction
+  review_cost: 2.0               # sending any transaction to manual review
+  review_catch_rate: 1.0         # share of reviewed frauds that analysts catch
+
+thresholds:
+  grid_size: 300                 # candidate thresholds (score quantiles) per axis
+  # Operational budgets (constraints on the cost optimisation, measured on validation):
+  max_review_rate: 0.05          # analysts can review at most 5% of transactions
+  max_block_rate: 0.01           # decline at most 1% of transactions (customer friction)
+
+service:
+  host: 0.0.0.0
+  port: 8000
+  top_n_reasons: 5
+
+app:
+  demo_fraud_weight: 0.40        # sampling weight for "Random transaction" (not real prevalence)
+  animation_step_seconds: 0.5
+  demo_pool_max_genuine: 2000   # all test-pool frauds + a seeded sample of genuine rows

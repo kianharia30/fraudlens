@@ -1,0 +1,31 @@
+# Run the API (:8000) and the demo app (:8501) against a model trained with `make train`.
+#   docker compose up --build
+services:
+  api:
+    build: .
+    image: fraudlens:latest
+    ports: ["8000:8000"]
+    volumes:
+      - ./artifacts:/app/artifacts:ro
+      - ./docs:/app/docs:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: fraudlens:latest
+    depends_on:
+      api:
+        condition: service_started
+    ports: ["8501:8501"]
+    volumes:
+      - ./artifacts:/app/artifacts:ro
+      - ./docs:/app/docs:ro
+    command:
+      - streamlit
+      - run
+      - src/fraudlens/app/streamlit_app.py
+      - --server.port=8501
+      - --server.address=0.0.0.0

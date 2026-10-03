@@ -1,0 +1,30 @@
+{
+  "n_requests": 1000,
+  "mode": "HTTP http://localhost:8010",
+  "server_latency_ms": {
+    "p50": 223.92,
+    "p95": 289.78,
+    "p99": 388.8,
+    "mean": 234.32
+  },
+  "round_trip_ms": {
+    "p50": 225.4,
+    "p95": 293.27,
+    "p99": 392.17,
+    "mean": 235.93
+  },
+  "server_latency_ms_no_explain": {
+    "p50": 23.81,
+    "p95": 31.51,
+    "p99": 73.21,
+    "mean": 25.72
+  },
+  "round_trip_ms_no_explain": {
+    "p50": 25.09,
+    "p95": 33.46,
+    "p99": 78.94,
+    "mean": 27.09
+  },
+  "machine": "Darwin arm64, Python 3.11.5",
+  "dataset": "IEEE-CIS"
+}

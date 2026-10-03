@@ -1,0 +1,47 @@
+# --- Data and model artefacts (never commit; regenerate with `make train`) ---
+data/raw/*
+data/processed/*
+artifacts/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!artifacts/.gitkeep
+*.parquet
+*.csv
+*.zip
+*.joblib
+*.pkl
+*.lgb
+mlruns/
+
+# Small synthetic test fixtures ARE committed
+!tests/fixtures/*.csv
+
+# Generated figures are committed deliberately (README shows them) - keep docs/figures tracked.
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# --- Tooling ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+.ipynb_checkpoints/
+
+# --- Env / OS / editors ---
+.env
+.DS_Store
+.idea/
+.vscode/
+data/synthetic/
+
+# Local tooling
+.claude/
